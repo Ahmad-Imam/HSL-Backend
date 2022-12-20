@@ -11,9 +11,7 @@ const router = express.Router();
 const FileController = require('./file.controller');
 
 router.get('/', function (req, res, next) {
-    res.render('index', {
-        title: 'Express',
-    });
+    res.send('aaaaaaaaaaaaaaaaaaaa');
 });
 router.get('/sendJson', FileController.sendJson);
 
