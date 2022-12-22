@@ -2,8 +2,8 @@ const fs = require('fs');
 
 const rs = fs.createReadStream('a.csv');
 rs.setEncoding('utf-8');
-let counter = 0;
-let listCsv = []
+
+
 let mapCsv = []
 let mapData = [];
 
@@ -18,22 +18,19 @@ class GroupController {
             let data2 = data1.split(',');
 
 
-            listCsv.push(data2)
-            mapData = {
-                "departure_date": data2[0],
-                "return_date": data2[1],
-                "departure_id": data2[2],
-                "departure_name": data2[3],
-                "return_id": data2[4],
-                "return_name": data2[5],
-                "cover_distance": data2[6],
-                "duration": data2[7],
+            if (parseInt(data2[6]) > 10 && parseInt(data2[7]) > 10) {
+                mapData = {
+                    "departure_date": data2[0],
+                    "return_date": data2[1],
+                    "departure_id": data2[2],
+                    "departure_name": data2[3],
+                    "return_id": data2[4],
+                    "return_name": data2[5],
+                    "cover_distance": (parseInt(data2[6]) / 1000).toPrecision(2),
+                    "duration": (parseInt(data2[7]) / 60).toPrecision(2),
+                }
+                mapCsv.push(mapData);
             }
-            mapCsv.push(mapData);
-            // console.log(data2[2]);
-            // console.log(data2[2]);
-            // if (data1 && data1.match(/^Paris$/g))
-            counter++;
         }
 
         (async () => {
@@ -53,18 +50,9 @@ class GroupController {
                 }
                 remainder = buf.substring(start);
             }
-            console.log(counter);
-            // console.log(mapCsv[1491]);
-            console.log(listCsv[1491]);
-            console.log(listCsv[1492]);
-            console.timeEnd(__filename);
+
             response.send(mapCsv)
         })();
-        console.log("lol");
-        // response.send({
-        //     status: 200,
-        //     message: 'Successssss',
-        // })
 
     }
 
