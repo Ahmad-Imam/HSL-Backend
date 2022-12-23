@@ -13,6 +13,7 @@ const FileController = require('./file.controller');
 router.get('/', function (req, res, next) {
     res.send('aaaaaaaaaaaaaaaaaaaa');
 });
-router.get('/sendJson', FileController.sendJson);
+router.get('/sendJourneyListJson', FileController.sendJourneyListJson);
+router.get('/sendStationListJson', FileController.sendStationListJson);
 
 module.exports = router;

@@ -1,15 +1,20 @@
 const fs = require('fs');
 
-const rs = fs.createReadStream('a.csv');
-rs.setEncoding('utf-8');
+const journeyListReadStream = fs.createReadStream('a.csv');
+journeyListReadStream.setEncoding('utf-8');
+const stationListReadStream = fs.createReadStream('b.csv');
+stationListReadStream.setEncoding('utf-8');
 
 
-let mapCsv = []
-let mapData = [];
+let journeyListJson = [];
+let journeyListMap = [];
+
+let stationListJson = [];
+let stationListMap = [];
 
 class GroupController {
 
-    async sendJson(request, response, next) {
+    async sendJourneyListJson(request, response, next) {
 
         function parseline(line, start) {
             const f0 = line.indexOf('\n', start);
@@ -19,7 +24,7 @@ class GroupController {
 
 
             if (parseInt(data2[6]) > 10 && parseInt(data2[7]) > 10) {
-                mapData = {
+                journeyListMap = {
                     "departure_date": data2[0],
                     "return_date": data2[1],
                     "departure_id": data2[2],
@@ -29,20 +34,19 @@ class GroupController {
                     "cover_distance": (parseInt(data2[6]) / 1000).toPrecision(2),
                     "duration": (parseInt(data2[7]) / 60).toPrecision(2),
                 }
-                mapCsv.push(mapData);
+                journeyListJson.push(journeyListMap);
             }
         }
 
         (async () => {
-            console.time(__filename);
+            // console.time(__filename);
             let remainder = '';
-            for await (const buf of rs) {
+            for await (const buf of journeyListReadStream) {
                 let start = 0;
                 let end;
                 while ((end = buf.indexOf('\n', start)) !== -1) {
                     if (start == 0 && remainder.length > 0) {
                         parseline(remainder + buf);
-                        // console.log("ok")
                         remainder = '';
                     } else
                         parseline(buf, start);
@@ -50,20 +54,63 @@ class GroupController {
                 }
                 remainder = buf.substring(start);
             }
+            console.log(journeyListJson.length);
+            response.send(journeyListJson)
+        })();
 
-            response.send(mapCsv)
+    }
+    async sendStationListJson(request, response, next) {
+
+        function parseline(line, start) {
+            const f0 = line.indexOf('\n', start);
+            const f1 = line.indexOf('\n', f0 + 1);
+            const data1 = line.substring(f0 + 1, f1);
+            let data2 = data1.split(',');
+
+
+            // console.log(data2);
+
+            stationListMap = {
+                "fid": data2[0],
+                "id": data2[1],
+                "nimi": data2[2],
+                "namn": data2[3],
+                "name": data2[4],
+                "osoite": data2[5],
+                "address": data2[6],
+                "kaupunki": data2[7],
+                "stad": data2[7],
+                "operaatto": data2[7],
+                "kapasiteet": data2[7],
+                "x": data2[7],
+                "y": data2[7],
+            }
+            stationListJson.push(stationListMap);
+
+        }
+
+        (async () => {
+            console.time(__filename);
+            let remainder = '';
+            for await (const buf of stationListReadStream) {
+                let start = 0;
+                let end;
+                while ((end = buf.indexOf('\n', start)) !== -1) {
+                    if (start == 0 && remainder.length > 0) {
+                        parseline(remainder + buf);
+                        remainder = '';
+                    } else
+                        parseline(buf, start);
+                    start = end + 1;
+                }
+                remainder = buf.substring(start);
+            }
+            console.log(stationListJson[0]);
+            response.send(stationListJson)
         })();
 
     }
 
 }
-
-
-
-
-
-
-
-
 
 module.exports = new GroupController();
