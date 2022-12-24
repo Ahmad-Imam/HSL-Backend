@@ -79,11 +79,11 @@ class GroupController {
                 "osoite": data2[5],
                 "address": data2[6],
                 "kaupunki": data2[7],
-                "stad": data2[7],
-                "operaatto": data2[7],
-                "kapasiteet": data2[7],
-                "x": data2[7],
-                "y": data2[7],
+                "stad": data2[8],
+                "operaatto": data2[9],
+                "kapasiteet": data2[10],
+                "x": data2[11],
+                "y": data2[12],
             }
             stationListJson.push(stationListMap);
 
@@ -105,7 +105,7 @@ class GroupController {
                 }
                 remainder = buf.substring(start);
             }
-            console.log(stationListJson[0]);
+            // console.log(stationListJson.tol);
             response.send(stationListJson)
         })();
 
