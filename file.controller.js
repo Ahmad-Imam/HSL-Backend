@@ -114,18 +114,7 @@ class GroupController {
     }
 
     async writeStationListJson(request, response, next) {
-
-
-
-        console.log("okaaa");
-        console.log(request.body);
-
-
-
-        // console.log(response.body.apikey);
         var writer = csvWriter();
-
-        // Append some data to CSV the file    
         writer = csvWriter({
             sendHeaders: false
         });
@@ -150,11 +139,9 @@ class GroupController {
         writer.end();
 
         response.send({
-            title: 'ok',
+            title: 'success',
             statuscode: response.statuscode
         });
-
-
     }
 
 }
