@@ -1,10 +1,12 @@
 const fs = require('fs');
+const createError = require('http-errors');
 
 const journeyListReadStream = fs.createReadStream('a.csv');
 journeyListReadStream.setEncoding('utf-8');
 const stationListReadStream = fs.createReadStream('b.csv');
 stationListReadStream.setEncoding('utf-8');
 
+var csvWriter = require('csv-write-stream')
 
 let journeyListJson = [];
 let journeyListMap = [];
@@ -108,6 +110,50 @@ class GroupController {
             // console.log(stationListJson.tol);
             response.send(stationListJson)
         })();
+
+    }
+
+    async writeStationListJson(request, response, next) {
+
+
+
+        console.log("okaaa");
+        console.log(request.body);
+
+
+
+        // console.log(response.body.apikey);
+        var writer = csvWriter();
+
+        // Append some data to CSV the file    
+        writer = csvWriter({
+            sendHeaders: false
+        });
+        writer.pipe(fs.createWriteStream("b.csv", {
+            flags: 'a'
+        }));
+        writer.write({
+            header1: `${request.body.fid}`,
+            header2: `${request.body.id}`,
+            header3: `${request.body.nimi}`,
+            header4: `${request.body.namn}`,
+            header5: `${request.body.name}`,
+            header6: `${request.body.osoite}`,
+            header7: `${request.body.address}`,
+            header8: `${request.body.kaupunki}`,
+            header9: `${request.body.stad}`,
+            header10: `${request.body.operaatto}`,
+            header11: `${request.body.kapasiteet}`,
+            header12: `${request.body.x}`,
+            header13: `${request.body.y}`,
+        });
+        writer.end();
+
+        response.send({
+            title: 'ok',
+            statuscode: response.statuscode
+        });
+
 
     }
 

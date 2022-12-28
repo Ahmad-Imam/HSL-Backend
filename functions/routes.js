@@ -15,5 +15,6 @@ router.get('/', function (req, res, next) {
 });
 router.get('/sendJourneyListJson', FileController.sendJourneyListJson);
 router.get('/sendStationListJson', FileController.sendStationListJson);
+router.get('/writeStationListJson', FileController.writeStationListJson);
 
 module.exports = router;

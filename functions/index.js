@@ -15,7 +15,7 @@ app.use('/', indexRouter);
 app.use(function (req, res, next) {
     next(createError(404));
 });
-app.listen(3000, () => console.log(`App is running on port 3000`));
+app.listen(8080, () => console.log(`App is running on port 8080`));
 exports.app = functions.https.onRequest(app);
 
 
