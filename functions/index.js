@@ -15,14 +15,6 @@ app.use('/', indexRouter);
 app.use(function (req, res, next) {
     next(createError(404));
 });
-app.listen(8080, () => console.log(`App is running on port 8080`));
+// app.listen(8080, () => console.log(`App is running on port 8080`));
+
 exports.app = functions.https.onRequest(app);
-
-
-// // Create and deploy your first functions
-// // https://firebase.google.com/docs/functions/get-started
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });

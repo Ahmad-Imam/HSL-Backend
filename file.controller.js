@@ -1,12 +1,6 @@
 const fs = require('fs');
-const createError = require('http-errors');
 
-const journeyListReadStream = fs.createReadStream('a.csv');
-journeyListReadStream.setEncoding('utf-8');
-const stationListReadStream = fs.createReadStream('b.csv');
-stationListReadStream.setEncoding('utf-8');
-
-var csvWriter = require('csv-write-stream')
+const csvWriter = require('csv-write-stream')
 
 let journeyListJson = [];
 let journeyListMap = [];
@@ -17,13 +11,14 @@ let stationListMap = [];
 class GroupController {
 
     async sendJourneyListJson(request, response, next) {
+        const journeyListReadStream = fs.createReadStream('a.csv');
+        journeyListReadStream.setEncoding('utf-8');
 
         function parseline(line, start) {
             const f0 = line.indexOf('\n', start);
             const f1 = line.indexOf('\n', f0 + 1);
             const data1 = line.substring(f0 + 1, f1);
             let data2 = data1.split(',');
-
 
             if (parseInt(data2[6]) > 10 && parseInt(data2[7]) > 10) {
                 journeyListMap = {
@@ -41,7 +36,6 @@ class GroupController {
         }
 
         (async () => {
-            // console.time(__filename);
             let remainder = '';
             for await (const buf of journeyListReadStream) {
                 let start = 0;
@@ -62,15 +56,14 @@ class GroupController {
 
     }
     async sendStationListJson(request, response, next) {
+        const stationListReadStream = fs.createReadStream('b.csv');
+        stationListReadStream.setEncoding('utf-8');
 
         function parseline(line, start) {
             const f0 = line.indexOf('\n', start);
             const f1 = line.indexOf('\n', f0 + 1);
             const data1 = line.substring(f0 + 1, f1);
             let data2 = data1.split(',');
-
-
-            // console.log(data2);
 
             stationListMap = {
                 "fid": data2[0],
@@ -143,7 +136,6 @@ class GroupController {
             statuscode: response.statuscode
         });
     }
-
 
     async writeJourneyListJson(request, response, next) {
 

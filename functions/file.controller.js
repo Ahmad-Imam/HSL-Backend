@@ -1,10 +1,6 @@
 const fs = require('fs');
 
-const journeyListReadStream = fs.createReadStream('a.csv');
-journeyListReadStream.setEncoding('utf-8');
-const stationListReadStream = fs.createReadStream('b.csv');
-stationListReadStream.setEncoding('utf-8');
-
+const csvWriter = require('csv-write-stream')
 
 let journeyListJson = [];
 let journeyListMap = [];
@@ -15,6 +11,8 @@ let stationListMap = [];
 class GroupController {
 
     async sendJourneyListJson(request, response, next) {
+        const journeyListReadStream = fs.createReadStream('a.csv');
+        journeyListReadStream.setEncoding('utf-8');
 
         function parseline(line, start) {
             const f0 = line.indexOf('\n', start);
@@ -39,7 +37,6 @@ class GroupController {
         }
 
         (async () => {
-            // console.time(__filename);
             let remainder = '';
             for await (const buf of journeyListReadStream) {
                 let start = 0;
@@ -60,15 +57,14 @@ class GroupController {
 
     }
     async sendStationListJson(request, response, next) {
+        const stationListReadStream = fs.createReadStream('b.csv');
+        stationListReadStream.setEncoding('utf-8');
 
         function parseline(line, start) {
             const f0 = line.indexOf('\n', start);
             const f1 = line.indexOf('\n', f0 + 1);
             const data1 = line.substring(f0 + 1, f1);
             let data2 = data1.split(',');
-
-
-            // console.log(data2);
 
             stationListMap = {
                 "fid": data2[0],
@@ -109,6 +105,66 @@ class GroupController {
             response.send(stationListJson)
         })();
 
+    }
+
+    async writeStationListJson(request, response, next) {
+        var writer = csvWriter();
+        writer = csvWriter({
+            sendHeaders: false
+        });
+        writer.pipe(fs.createWriteStream("b.csv", {
+            flags: 'a'
+        }));
+        writer.write({
+            header1: `${request.body.fid}`,
+            header2: `${request.body.id}`,
+            header3: `${request.body.nimi}`,
+            header4: `${request.body.namn}`,
+            header5: `${request.body.name}`,
+            header6: `${request.body.osoite}`,
+            header7: `${request.body.address}`,
+            header8: `${request.body.kaupunki}`,
+            header9: `${request.body.stad}`,
+            header10: `${request.body.operaatto}`,
+            header11: `${request.body.kapasiteet}`,
+            header12: `${request.body.x}`,
+            header13: `${request.body.y}`,
+        });
+        writer.end();
+
+        response.send({
+            title: 'success',
+            statuscode: response.statuscode
+        });
+    }
+
+    async writeJourneyListJson(request, response, next) {
+
+        console.log(request.body);
+
+        var writer = csvWriter();
+        writer = csvWriter({
+            sendHeaders: false
+        });
+        writer.pipe(fs.createWriteStream("a.csv", {
+            flags: 'a'
+        }));
+        writer.write({
+            header1: `${request.body.departureDate}`,
+            header2: `${request.body.returnDate}`,
+            header3: `${request.body.departureId}`,
+            header4: `${request.body.departureName}`,
+            header5: `${request.body.returnIdText}`,
+            header6: `${request.body.returnName}`,
+            header7: `${request.body.coverDistance}`,
+            header8: `${request.body.duration}`,
+        });
+        writer.end();
+
+        response.send({
+            title: 'success',
+            statuscode: response.statuscode
+        });
     }
 
 }

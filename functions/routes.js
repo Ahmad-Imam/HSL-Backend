@@ -11,10 +11,11 @@ const router = express.Router();
 const FileController = require('./file.controller');
 
 router.get('/', function (req, res, next) {
-    res.send('aaaaaaaaaaaaaaaaaaaa');
+    res.send('Home');
 });
 router.get('/sendJourneyListJson', FileController.sendJourneyListJson);
 router.get('/sendStationListJson', FileController.sendStationListJson);
-router.get('/writeStationListJson', FileController.writeStationListJson);
+router.post('/writeStationListJson', FileController.writeStationListJson);
+router.post('/writeJourneyListJson', FileController.writeJourneyListJson);
 
 module.exports = router;
