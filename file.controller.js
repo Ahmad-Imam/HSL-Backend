@@ -144,6 +144,36 @@ class GroupController {
         });
     }
 
+
+    async writeJourneyListJson(request, response, next) {
+
+        console.log(request.body);
+
+        var writer = csvWriter();
+        writer = csvWriter({
+            sendHeaders: false
+        });
+        writer.pipe(fs.createWriteStream("a.csv", {
+            flags: 'a'
+        }));
+        writer.write({
+            header1: `${request.body.departureDate}`,
+            header2: `${request.body.returnDate}`,
+            header3: `${request.body.departureId}`,
+            header4: `${request.body.departureName}`,
+            header5: `${request.body.returnIdText}`,
+            header6: `${request.body.returnName}`,
+            header7: `${request.body.coverDistance}`,
+            header8: `${request.body.duration}`,
+        });
+        writer.end();
+
+        response.send({
+            title: 'success',
+            statuscode: response.statuscode
+        });
+    }
+
 }
 
 module.exports = new GroupController();
