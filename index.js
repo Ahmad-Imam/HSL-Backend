@@ -17,6 +17,5 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
-app.listen(process.env.PORT || 8080, () => console.log(`App is running on port 8080`));
-console.log("after listen");
+app.listen(8080, () => console.log(`App is running on port 8080`));
 module.exports = app;

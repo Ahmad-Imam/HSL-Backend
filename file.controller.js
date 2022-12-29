@@ -12,9 +12,6 @@ let stationListMap = [];
 class GroupController {
 
     async sendJourneyListJson(request, response, next) {
-
-        console.log("in");
-
         function parseline(line, start) {
             const f0 = line.indexOf('\n', start);
             const f1 = line.indexOf('\n', f0 + 1);
@@ -51,7 +48,6 @@ class GroupController {
                 }
                 remainder = buf.substring(start);
             }
-            console.log("out");
             console.log(journeyListJson.length);
             response.send(journeyListJson);
         })();
