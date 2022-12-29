@@ -1,7 +1,8 @@
 const fs = require('fs');
 
 const csvWriter = require('csv-write-stream')
-
+const journeyListReadStream = fs.createReadStream('a.csv');
+journeyListReadStream.setEncoding('utf-8');
 let journeyListJson = [];
 let journeyListMap = [];
 
@@ -11,8 +12,8 @@ let stationListMap = [];
 class GroupController {
 
     async sendJourneyListJson(request, response, next) {
-        const journeyListReadStream = fs.createReadStream('a.csv');
-        journeyListReadStream.setEncoding('utf-8');
+
+        console.log("in");
 
         function parseline(line, start) {
             const f0 = line.indexOf('\n', start);
@@ -33,6 +34,8 @@ class GroupController {
                     "duration": (parseInt(data2[7]) / 60).toPrecision(2),
                 }
                 journeyListJson.push(journeyListMap);
+                console.log("out");
+                console.log(journeyListJson.length);
             }
         }
 
@@ -56,6 +59,8 @@ class GroupController {
         })();
 
     }
+
+
     async sendStationListJson(request, response, next) {
         const stationListReadStream = fs.createReadStream('b.csv');
         stationListReadStream.setEncoding('utf-8');
