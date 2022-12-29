@@ -9,8 +9,9 @@ app.use(express.urlencoded({
 const router = express.Router();
 
 const FileController = require('./file.controller');
-
+console.log("in router");
 router.get('/', function (req, res, next) {
+    console.log("in /");
     res.send('Home');
 });
 router.get('/sendJourneyListJson', FileController.sendJourneyListJson);
