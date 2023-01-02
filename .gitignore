@@ -1,3 +1,6 @@
+#cloud files not used
+functions/
+
 # Logs
 logs
 *.log

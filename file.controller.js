@@ -83,7 +83,6 @@ class GroupController {
         }
 
         (async () => {
-            console.time(__filename);
             let remainder = '';
             for await (const buf of stationListReadStream) {
                 let start = 0;
