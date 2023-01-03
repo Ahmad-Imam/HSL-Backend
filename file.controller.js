@@ -1,4 +1,7 @@
 const fs = require('fs');
+
+const moment = require('moment');
+
 const journeyListReadStream = fs.createReadStream('a.csv');
 journeyListReadStream.setEncoding('utf-8');
 const csvWriter = require('csv-write-stream')
@@ -103,63 +106,123 @@ class GroupController {
     }
 
     async writeStationListJson(request, response, next) {
-        var writer = csvWriter();
-        writer = csvWriter({
-            sendHeaders: false
-        });
-        writer.pipe(fs.createWriteStream("b.csv", {
-            flags: 'a'
-        }));
-        writer.write({
-            header1: `${request.body.fid}`,
-            header2: `${request.body.id}`,
-            header3: `${request.body.nimi}`,
-            header4: `${request.body.namn}`,
-            header5: `${request.body.name}`,
-            header6: `${request.body.osoite}`,
-            header7: `${request.body.address}`,
-            header8: `${request.body.kaupunki}`,
-            header9: `${request.body.stad}`,
-            header10: `${request.body.operaatto}`,
-            header11: `${request.body.kapasiteet}`,
-            header12: `${request.body.x}`,
-            header13: `${request.body.y}`,
-        });
-        writer.end();
 
-        response.send({
-            title: 'success',
-            statuscode: response.statuscode
-        });
+
+        // console.log(isNaN(parseFloat(" ")) && isNaN(" " - 0));
+        if (isNaN(parseFloat(request.body.x)) && isNaN(request.body.x - 0)) {
+            response.statusCode = 400;
+            response.write(
+                "X is not a number"
+            );
+            response.send();
+        } else if (isNaN(parseFloat(request.body.y)) && isNaN(request.body.y - 0)) {
+            response.statusCode = 400;
+            response.write(
+                "Y is not a number"
+            );
+            response.send();
+        } else {
+            // var writer = csvWriter();
+            // writer = csvWriter({
+            //     sendHeaders: false
+            // });
+            // writer.pipe(fs.createWriteStream("b.csv", {
+            //     flags: 'a'
+            // }));
+            // writer.write({
+            //     header1: `${request.body.fid}`,
+            //     header2: `${request.body.id}`,
+            //     header3: `${request.body.nimi}`,
+            //     header4: `${request.body.namn}`,
+            //     header5: `${request.body.name}`,
+            //     header6: `${request.body.osoite}`,
+            //     header7: `${request.body.address}`,
+            //     header8: `${request.body.kaupunki}`,
+            //     header9: `${request.body.stad}`,
+            //     header10: `${request.body.operaatto}`,
+            //     header11: `${request.body.kapasiteet}`,
+            //     header12: `${request.body.x}`,
+            //     header13: `${request.body.y}`,
+            // });
+            // writer.end();
+
+            response.send({
+                title: 'success',
+                statuscode: response.statuscode
+            });
+        }
+
     }
 
     async writeJourneyListJson(request, response, next) {
+        var dateDiff = (Number.isInteger(Number(moment(request.body.return_date).diff(moment(request.body.departure_date)))) && Number(moment(request.body.return_date).diff(moment(request.body.departure_date))) > 0);
+        var validDepartureDate = moment(request.body.departure_date, moment.ISO_8601, true).isValid();
+        var validReturnDate = moment(request.body.return_date, moment.ISO_8601, true).isValid();
+        var validDepartureId = (Number.isInteger(Number(request.body.departure_id)) && Number(request.body.departure_id) > 0);
+        var validReturnId = (Number.isInteger(Number(request.body.return_id)) && Number(request.body.return_id) > 0);
 
-        console.log(request.body);
 
-        var writer = csvWriter();
-        writer = csvWriter({
-            sendHeaders: false
-        });
-        writer.pipe(fs.createWriteStream("a.csv", {
-            flags: 'a'
-        }));
-        writer.write({
-            header1: `${request.body.departureDate}`,
-            header2: `${request.body.returnDate}`,
-            header3: `${request.body.departureId}`,
-            header4: `${request.body.departureName}`,
-            header5: `${request.body.returnIdText}`,
-            header6: `${request.body.returnName}`,
-            header7: `${request.body.coverDistance}`,
-            header8: `${request.body.duration}`,
-        });
-        writer.end();
+        console.log(!isNaN(parseFloat("20.33")) && !isNaN("20.33" - 0));
 
-        response.send({
-            title: 'success',
-            statuscode: response.statuscode
-        });
+        // console.log(moment("2014-06-22T13:17:21+0000").diff(moment("2015-06-22T13:17:21+0000")));
+        // console.log(moment("2015-06-22T13:17:21+0000", moment.ISO_8601, true).isValid());
+
+        if ((parseInt(request.body.cover_distance) < 10) || (parseInt(request.body.duration) < 10)) {
+            response.statusCode = 400;
+            response.write(
+                "Cover distance or duration is not less than 10"
+            );
+            response.send();
+        } else if ((!validDepartureId) || (!validReturnId))
+
+        {
+            response.statusCode = 400;
+            response.write(
+                "Departure station id or Return station id is not a positive integer"
+            );
+            response.send();
+        } else if ((!validDepartureDate) || (!validReturnDate))
+
+        {
+            response.statusCode = 400;
+            response.write(
+                "Not a valid date format"
+            );
+            response.send();
+
+        } else if (!dateDiff) {
+            response.statusCode = 400;
+            response.write(
+                "Return Time can not be before Departure time"
+            );
+            response.send();
+
+        } else {
+            // var writer = csvWriter();
+            // writer = csvWriter({
+            //     sendHeaders: false
+            // });
+            // writer.pipe(fs.createWriteStream("a.csv", {
+            //     flags: 'a'
+            // }));
+
+            // writer.write({
+            //     header1: `${request.body.departureDate}`,
+            //     header2: `${request.body.returnDate}`,
+            //     header3: `${request.body.departureId}`,
+            //     header4: `${request.body.departureName}`,
+            //     header5: `${request.body.returnIdText}`,
+            //     header6: `${request.body.returnName}`,
+            //     header7: `${request.body.coverDistance}`,
+            //     header8: `${request.body.duration}`,
+            // });
+            // writer.end();
+
+            response.sendStatus(200);
+        }
+
+
+
     }
 
 }
