@@ -1,150 +1,137 @@
 const fs = require('fs');
-
 const moment = require('moment');
-
-const journeyListReadStream = fs.createReadStream('a.csv');
-journeyListReadStream.setEncoding('utf-8');
 const csvWriter = require('csv-write-stream')
-const stationListReadStream = fs.createReadStream('b.csv');
-stationListReadStream.setEncoding('utf-8');
+const Papa = require('papaparse');
+
 let journeyListJson = [];
 let journeyListMap = [];
 
 let stationListJson = [];
 let stationListMap = [];
 
+
+
+
 class GroupController {
 
     async sendJourneyListJson(request, response, next) {
-        function parseline(line, start) {
-            const f0 = line.indexOf('\n', start);
-            const f1 = line.indexOf('\n', f0 + 1);
-            const data1 = line.substring(f0 + 1, f1);
-            let data2 = data1.split(',');
 
-            if (parseInt(data2[6]) > 10 && parseInt(data2[7]) > 10) {
-                journeyListMap = {
-                    "departure_date": data2[0],
-                    "return_date": data2[1],
-                    "departure_id": data2[2],
-                    "departure_name": data2[3],
-                    "return_id": data2[4],
-                    "return_name": data2[5],
-                    "cover_distance": (parseInt(data2[6]) / 1000).toPrecision(2),
-                    "duration": (parseInt(data2[7]) / 60).toPrecision(2),
-                }
-                journeyListJson.push(journeyListMap);
-            }
-        }
+        Papa.parse(fs.createReadStream('a.csv'), {
+            transformHeader: header => header.trim(),
+            step: function (result) {
+                if ((parseInt(result.data[6]) > 10 && parseInt(result.data[7]) > 10) &&
+                    ((Number.isInteger(Number(result.data[2])) && Number(result.data[2]) > 0)) &&
+                    (Number.isInteger(Number(result.data[4])) && Number(result.data[4]) > 0) &&
+                    (moment(result.data[1], moment.ISO_8601, true).isValid()) &&
+                    (moment(result.data[0], moment.ISO_8601, true).isValid()) &&
+                    (Number.isInteger(Number(moment(result.data[1]).diff(moment(result.data[0])))) && Number(moment(result.data[1]).diff(moment(result.data[0]))) > 0)
 
-        (async () => {
-            let remainder = '';
-            for await (const buf of journeyListReadStream) {
-                let start = 0;
-                let end;
-                while ((end = buf.indexOf('\n', start)) !== -1) {
-                    if (start == 0 && remainder.length > 0) {
-                        parseline(remainder + buf);
-                        remainder = '';
-                    } else
-                        parseline(buf, start);
-                    start = end + 1;
+                )
+
+                {
+                    journeyListMap = {
+                        "departure_date": result.data[0],
+                        "return_date": result.data[1],
+                        "departure_id": result.data[2],
+                        "departure_name": result.data[3],
+                        "return_id": result.data[4],
+                        "return_name": result.data[5],
+                        "cover_distance": (parseInt(result.data[6]) / 1000).toPrecision(2),
+                        "duration": (parseInt(result.data[7]) / 60).toPrecision(2),
+                    }
+                    journeyListJson.push(journeyListMap)
                 }
-                remainder = buf.substring(start);
+            },
+            complete: function (results, file) {
+                journeyListJson.shift();
+                response.send(journeyListJson);
+                console.log(response.statusCode);
+                console.log(journeyListJson.length);
+                journeyListJson = [];
             }
-            response.send(journeyListJson);
-        })();
+        });
 
     }
     async sendStationListJson(request, response, next) {
 
+        Papa.parse(fs.createReadStream('b.csv'), {
+            transformHeader: header => header.trim(),
+            step: function (result) {
 
-        function parseline(line, start) {
-            const f0 = line.indexOf('\n', start);
-            const f1 = line.indexOf('\n', f0 + 1);
-            const data1 = line.substring(f0 + 1, f1);
-            let data2 = data1.split(',');
+                if (!(isNaN(parseFloat(result.data[11])) && isNaN(result.data[11] - 0)) && (!(isNaN(parseFloat(result.data[12])) && isNaN(result.data[12] - 0))))
 
-            stationListMap = {
-                "fid": data2[0],
-                "id": data2[1],
-                "nimi": data2[2],
-                "namn": data2[3],
-                "name": data2[4],
-                "osoite": data2[5],
-                "address": data2[6],
-                "kaupunki": data2[7],
-                "stad": data2[8],
-                "operaatto": data2[9],
-                "kapasiteet": data2[10],
-                "x": data2[11],
-                "y": data2[12],
-            }
-            stationListJson.push(stationListMap);
-
-
-        }
-
-        (async () => {
-            let remainder = '';
-            for await (const buf of stationListReadStream) {
-                let start = 0;
-                let end;
-                while ((end = buf.indexOf('\n', start)) !== -1) {
-                    if (start == 0 && remainder.length > 0) {
-                        parseline(remainder + buf);
-                        remainder = '';
-                    } else
-                        parseline(buf, start);
-                    start = end + 1;
+                {
+                    stationListMap = {
+                        "fid": result.data[0],
+                        "id": result.data[1],
+                        "nimi": result.data[2],
+                        "namn": result.data[3],
+                        "name": result.data[4],
+                        "osoite": result.data[5],
+                        "address": result.data[6],
+                        "kaupunki": result.data[7],
+                        "stad": result.data[8],
+                        "operaatto": result.data[9],
+                        "kapasiteet": result.data[10],
+                        "x": result.data[11],
+                        "y": result.data[12],
+                    }
+                    stationListJson.push(stationListMap)
+                } else {
+                    console.log(result.data);
                 }
-                remainder = buf.substring(start);
-            }
-            response.send(stationListJson);
-        })();
+            },
+            complete: function (results, file) {
 
+                stationListJson.shift();
+                response.send(stationListJson);
+                console.log(response.statusCode);
+                console.log(stationListJson.length);
+                stationListJson = [];
+            }
+        });
     }
 
     async writeStationListJson(request, response, next) {
-
-
-        // console.log(isNaN(parseFloat(" ")) && isNaN(" " - 0));
         if (isNaN(parseFloat(request.body.x)) && isNaN(request.body.x - 0)) {
+            console.log("in x");
             response.statusCode = 400;
             response.write(
                 "X is not a number"
             );
             response.send();
         } else if (isNaN(parseFloat(request.body.y)) && isNaN(request.body.y - 0)) {
+            console.log("in y");
             response.statusCode = 400;
             response.write(
                 "Y is not a number"
             );
             response.send();
         } else {
-            // var writer = csvWriter();
-            // writer = csvWriter({
-            //     sendHeaders: false
-            // });
-            // writer.pipe(fs.createWriteStream("b.csv", {
-            //     flags: 'a'
-            // }));
-            // writer.write({
-            //     header1: `${request.body.fid}`,
-            //     header2: `${request.body.id}`,
-            //     header3: `${request.body.nimi}`,
-            //     header4: `${request.body.namn}`,
-            //     header5: `${request.body.name}`,
-            //     header6: `${request.body.osoite}`,
-            //     header7: `${request.body.address}`,
-            //     header8: `${request.body.kaupunki}`,
-            //     header9: `${request.body.stad}`,
-            //     header10: `${request.body.operaatto}`,
-            //     header11: `${request.body.kapasiteet}`,
-            //     header12: `${request.body.x}`,
-            //     header13: `${request.body.y}`,
-            // });
-            // writer.end();
+            console.log("in");
+            var writer = csvWriter();
+            writer = csvWriter({
+                sendHeaders: false
+            });
+            writer.pipe(fs.createWriteStream("b.csv", {
+                flags: 'a'
+            }));
+            writer.write({
+                header1: `${request.body.fid}`,
+                header2: `${request.body.id}`,
+                header3: `${request.body.nimi}`,
+                header4: `${request.body.namn}`,
+                header5: `${request.body.name}`,
+                header6: `${request.body.osoite}`,
+                header7: `${request.body.address}`,
+                header8: `${request.body.kaupunki}`,
+                header9: `${request.body.stad}`,
+                header10: `${request.body.operaatto}`,
+                header11: `${request.body.kapasiteet}`,
+                header12: `${request.body.x}`,
+                header13: `${request.body.y}`,
+            });
+            writer.end();
 
             response.send({
                 title: 'success',
@@ -155,19 +142,13 @@ class GroupController {
     }
 
     async writeJourneyListJson(request, response, next) {
-        var dateDiff = (Number.isInteger(Number(moment(request.body.return_date).diff(moment(request.body.departure_date)))) && Number(moment(request.body.return_date).diff(moment(request.body.departure_date))) > 0);
-        var validDepartureDate = moment(request.body.departure_date, moment.ISO_8601, true).isValid();
-        var validReturnDate = moment(request.body.return_date, moment.ISO_8601, true).isValid();
-        var validDepartureId = (Number.isInteger(Number(request.body.departure_id)) && Number(request.body.departure_id) > 0);
-        var validReturnId = (Number.isInteger(Number(request.body.return_id)) && Number(request.body.return_id) > 0);
+        var dateDiff = (Number.isInteger(Number(moment(request.body.returnDate).diff(moment(request.body.departureDate)))) && Number(moment(request.body.returnDate).diff(moment(request.body.departureDate))) > 0);
+        var validDepartureDate = moment(request.body.departureDate, moment.ISO_8601, true).isValid();
+        var validReturnDate = moment(request.body.returnDate, moment.ISO_8601, true).isValid();
+        var validDepartureId = (Number.isInteger(Number(request.body.departureId)) && Number(request.body.departureId) > 0);
+        var validReturnId = (Number.isInteger(Number(request.body.returnId)) && Number(request.body.returnId) > 0);
 
-
-        console.log(!isNaN(parseFloat("20.33")) && !isNaN("20.33" - 0));
-
-        // console.log(moment("2014-06-22T13:17:21+0000").diff(moment("2015-06-22T13:17:21+0000")));
-        // console.log(moment("2015-06-22T13:17:21+0000", moment.ISO_8601, true).isValid());
-
-        if ((parseInt(request.body.cover_distance) < 10) || (parseInt(request.body.duration) < 10)) {
+        if ((parseInt(request.body.coverDistance) < 10) || (parseInt(request.body.duration) < 10)) {
             response.statusCode = 400;
             response.write(
                 "Cover distance or duration is not less than 10"
@@ -198,33 +179,29 @@ class GroupController {
             response.send();
 
         } else {
-            // var writer = csvWriter();
-            // writer = csvWriter({
-            //     sendHeaders: false
-            // });
-            // writer.pipe(fs.createWriteStream("a.csv", {
-            //     flags: 'a'
-            // }));
+            var writer = csvWriter();
+            writer = csvWriter({
+                sendHeaders: false
+            });
+            writer.pipe(fs.createWriteStream("a.csv", {
+                flags: 'a'
+            }));
 
-            // writer.write({
-            //     header1: `${request.body.departureDate}`,
-            //     header2: `${request.body.returnDate}`,
-            //     header3: `${request.body.departureId}`,
-            //     header4: `${request.body.departureName}`,
-            //     header5: `${request.body.returnIdText}`,
-            //     header6: `${request.body.returnName}`,
-            //     header7: `${request.body.coverDistance}`,
-            //     header8: `${request.body.duration}`,
-            // });
-            // writer.end();
+            writer.write({
+                header1: `${request.body.departureDate}`,
+                header2: `${request.body.returnDate}`,
+                header3: `${request.body.departureId}`,
+                header4: `${request.body.departureName}`,
+                header5: `${request.body.returnIdText}`,
+                header6: `${request.body.returnName}`,
+                header7: `${request.body.coverDistance}`,
+                header8: `${request.body.duration}`,
+            });
+            writer.end();
 
             response.sendStatus(200);
         }
-
-
-
     }
-
 }
 
 module.exports = new GroupController();
