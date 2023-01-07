@@ -50,6 +50,10 @@ The project needs to be run locally. Make sure to run the project before opening
                 "y": "1.1"
             }
 
+## Backend Testing
+- run npm test
+Testing framework: Mocha,Chai
+The tests are mainly written for creating new journey/staion endpoints. Returns response status 400 if invalid data found in request body of those endpoints. Returns 200 for success.
 
 ## Application Information
 The application consists of a separate frontend and backend repository.  
