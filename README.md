@@ -19,10 +19,36 @@ The project needs to be run locally. Make sure to run the project before opening
 
 3. GET /sendStationListJson shows all the station information included in the b.csv file. It is the dataset about station information given in the exercise github. (https://opendata.arcgis.com/datasets/726277c507ef4914b0aec3cbcfcbfafc_0.csv)
 
-4. POST /writeJourneyListJson creates new journey entry sent from frontend and writes them to the a.csv file. 
+4. POST /writeJourneyListJson creates new journey entry sent from frontend and writes them to the a.csv file. A sample valid journey information in request body looks like this: 
+            {
+                "departureDate": "2014-05-31T23:57:25",
+                "returnDate": "2016-06-22T13:17:21+0000",
+                "departureId": "10",
+                "departureName": "Dname",
+                "returnId": "10",
+                "returnName": "Rname",
+                "coverDistance": "10",
+                "duration": "100"
+            }
 
-5. POST /writeStationListJson creates new station entry sent from frontend and writes them to the b.csv file. 
 
+5. POST /writeStationListJson creates new station entry sent from frontend and writes them to the b.csv file. A sample valid station information in request body looks like this: 
+
+{
+                "fid": "1",
+                "id": "1",
+                "nimi": "sample nimi",
+                "namn": "sample namn",
+                "name": "sample name",
+                "osoite": "sample osoite",
+                "address": "sample address",
+                "kaupunki": "sample kaupunki",
+                "stad": "sample stad",
+                "operaatto": "sample operaatto",
+                "kapasiteet": "sample kapasiteet",
+                "x": "1.1",
+                "y": "1.1"
+            }
 
 
 ## Application Information

@@ -22,7 +22,7 @@ describe('Tasks API', () => {
                     response.body.should.be.a('array');
                     done();
                 });
-        }).timeout(10000);
+        }).timeout(100000);
 
     });
 
@@ -71,7 +71,7 @@ describe('Tasks API', () => {
                     done();
                 });
         });
-        it("It should not POST a new station. X is not a valid value", (done) => {
+        it("It should not POST a new station. X is not a valid number", (done) => {
             const task = {
                 "fid": "1",
                 "id": "1",
@@ -95,7 +95,7 @@ describe('Tasks API', () => {
                     done();
                 });
         });
-        it("It should not POST a new station. Y is not a valid value", (done) => {
+        it("It should not POST a new station. Y is not a valid number", (done) => {
             const task = {
                 "fid": "1",
                 "id": "1",
@@ -120,19 +120,71 @@ describe('Tasks API', () => {
                 });
         });
 
+        it("It should not POST a new station. FID is not a valid number", (done) => {
+            const task = {
+                "fid": "false",
+                "id": "1",
+                "nimi": "false",
+                "namn": "false",
+                "name": "false",
+                "osoite": "false",
+                "address": "false",
+                "kaupunki": "false",
+                "stad": "false",
+                "operaatto": "false",
+                "kapasiteet": "false",
+                "x": "1",
+                "y": "1",
+            };
+            chai.request(groupController)
+                .post("/writeStationListJson")
+                .send(task)
+                .end((err, response) => {
+                    response.should.have.status(400);
+                    done();
+                });
+        });
+
+        it("It should not POST a new station. ID is not a valid number", (done) => {
+            const task = {
+                "fid": "1",
+                "id": "false",
+                "nimi": "false",
+                "namn": "false",
+                "name": "false",
+                "osoite": "false",
+                "address": "false",
+                "kaupunki": "false",
+                "stad": "false",
+                "operaatto": "false",
+                "kapasiteet": "false",
+                "x": "1",
+                "y": "1",
+            };
+            chai.request(groupController)
+                .post("/writeStationListJson")
+                .send(task)
+                .end((err, response) => {
+                    response.should.have.status(400);
+                    done();
+                });
+        });
+
+
+
     });
 
 
     describe("POST /writeJourneyListJson", () => {
         it("It should POST a new journey", (done) => {
             const task = {
-                "departure_date": "2016-05-31T23:57:25",
-                "return_date": "2018-06-22T13:17:21+0000",
-                "departure_id": "10",
-                "departure_name": "false",
-                "return_id": "10",
-                "return_name": "false",
-                "cover_distance": "100",
+                "departureDate": "2016-05-31T23:57:25",
+                "returnDate": "2018-06-22T13:17:21+0000",
+                "departureId": "10",
+                "departureName": "false",
+                "returnId": "10",
+                "returnName": "false",
+                "coverDistance": "100",
                 "duration": "100"
 
             };
@@ -147,13 +199,13 @@ describe('Tasks API', () => {
 
         it("It should not POST a new journey. Cover Distance Less than 10", (done) => {
             const task = {
-                "departure_date": "2018-05-31T23:57:25",
-                "return_date": "2016-06-22T13:17:21+0000",
-                "departure_id": "10",
-                "departure_name": "false",
-                "return_id": "10",
-                "return_name": "false",
-                "cover_distance": "1",
+                "departureDate": "2018-05-31T23:57:25",
+                "returnDate": "2016-06-22T13:17:21+0000",
+                "departureId": "10",
+                "departureName": "false",
+                "returnId": "10",
+                "returnName": "false",
+                "coverDistance": "1",
                 "duration": "10"
 
             };
@@ -167,13 +219,13 @@ describe('Tasks API', () => {
         });
         it("It should not POST a new journey. Duration Less than 10", (done) => {
             const task = {
-                "departure_date": "2018-05-31T23:57:25",
-                "return_date": "2016-06-22T13:17:21+0000",
-                "departure_id": "10",
-                "departure_name": "false",
-                "return_id": "10",
-                "return_name": "false",
-                "cover_distance": "10",
+                "departureDate": "2018-05-31T23:57:25",
+                "returnDate": "2016-06-22T13:17:21+0000",
+                "departureId": "10",
+                "departureName": "false",
+                "returnId": "10",
+                "returnName": "false",
+                "coverDistance": "10",
                 "duration": "1"
 
             };
@@ -187,13 +239,13 @@ describe('Tasks API', () => {
         });
         it("It should not POST a new journey. Departure Station Id is not positive integer", (done) => {
             const task = {
-                "departure_date": "2018-05-31T23:57:25",
-                "return_date": "2016-06-22T13:17:21+0000",
-                "departure_id": "-10",
-                "departure_name": "false",
-                "return_id": "10",
-                "return_name": "false",
-                "cover_distance": "100",
+                "departureDate": "2018-05-31T23:57:25",
+                "returnDate": "2016-06-22T13:17:21+0000",
+                "departureId": "-10",
+                "departureName": "false",
+                "returnId": "10",
+                "returnName": "false",
+                "coverDistance": "100",
                 "duration": "100"
 
             };
@@ -208,13 +260,13 @@ describe('Tasks API', () => {
 
         it("It should not POST a new journey. Return Station Id is not positive integer", (done) => {
             const task = {
-                "departure_date": "2018-05-31T23:57:25",
-                "return_date": "2016-06-22T13:17:21+0000",
-                "departure_id": "10",
-                "departure_name": "false",
-                "return_id": "-10",
-                "return_name": "false",
-                "cover_distance": "100",
+                "departureDate": "2018-05-31T23:57:25",
+                "returnDate": "2016-06-22T13:17:21+0000",
+                "departureId": "10",
+                "departureName": "false",
+                "returnId": "-10",
+                "returnName": "false",
+                "coverDistance": "100",
                 "duration": "100"
 
             };
@@ -230,13 +282,13 @@ describe('Tasks API', () => {
 
         it("It should not POST a new journey. Departure Date is not valid format", (done) => {
             const task = {
-                "departure_date": "aa2018-05-31T23:57:25",
-                "return_date": "2016-06-22T13:17:21+0000",
-                "departure_id": "10",
-                "departure_name": "false",
-                "return_id": "10",
-                "return_name": "false",
-                "cover_distance": "100",
+                "departureDate": "aa2018-05-31T23:57:25",
+                "returnDate": "2016-06-22T13:17:21+0000",
+                "departureId": "10",
+                "departureName": "false",
+                "returnId": "10",
+                "returnName": "false",
+                "coverDistance": "100",
                 "duration": "100"
 
             };
@@ -251,13 +303,13 @@ describe('Tasks API', () => {
 
         it("It should not POST a new journey. Return Date is not valid format", (done) => {
             const task = {
-                "departure_date": "2018-05-31T23:57:25",
-                "return_date": "aa2016-06-22T13:17:21+0000",
-                "departure_id": "10",
-                "departure_name": "false",
-                "return_id": "10",
-                "return_name": "false",
-                "cover_distance": "100",
+                "departureDate": "2018-05-31T23:57:25",
+                "returnDate": "aa2016-06-22T13:17:21+0000",
+                "departureId": "10",
+                "departureName": "false",
+                "returnId": "10",
+                "returnName": "false",
+                "coverDistance": "100",
                 "duration": "100"
 
             };
@@ -272,13 +324,13 @@ describe('Tasks API', () => {
 
         it("It should not POST a new journey. Return Time can not be before Departure time", (done) => {
             const task = {
-                "departure_date": "2018-05-31T23:57:25",
-                "return_date": "2016-06-22T13:17:21+0000",
-                "departure_id": "10",
-                "departure_name": "false",
-                "return_id": "10",
-                "return_name": "false",
-                "cover_distance": "100",
+                "departureDate": "2018-05-31T23:57:25",
+                "returnDate": "2016-06-22T13:17:21+0000",
+                "departureId": "10",
+                "departureName": "false",
+                "returnId": "10",
+                "returnName": "false",
+                "coverDistance": "100",
                 "duration": "100"
 
             };

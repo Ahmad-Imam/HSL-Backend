@@ -78,7 +78,7 @@ class GroupController {
                     }
                     stationListJson.push(stationListMap)
                 } else {
-                    console.log(result.data);
+                    // console.log(result.data);
                 }
             },
             complete: function (results, file) {
@@ -94,21 +94,35 @@ class GroupController {
 
     async writeStationListJson(request, response, next) {
         if (isNaN(parseFloat(request.body.x)) && isNaN(request.body.x - 0)) {
-            console.log("in x");
+
             response.statusCode = 400;
             response.write(
                 "X is not a number"
             );
             response.send();
         } else if (isNaN(parseFloat(request.body.y)) && isNaN(request.body.y - 0)) {
-            console.log("in y");
+
             response.statusCode = 400;
             response.write(
                 "Y is not a number"
             );
             response.send();
+        } else if (isNaN(parseFloat(request.body.fid)) && isNaN(request.body.fid - 0)) {
+
+            response.statusCode = 400;
+            response.write(
+                "FID is not a number"
+            );
+            response.send();
+        } else if (isNaN(parseFloat(request.body.id)) && isNaN(request.body.id - 0)) {
+
+            response.statusCode = 400;
+            response.write(
+                "ID is not a number"
+            );
+            response.send();
         } else {
-            console.log("in");
+
             var writer = csvWriter();
             writer = csvWriter({
                 sendHeaders: false
@@ -192,7 +206,7 @@ class GroupController {
                 header2: `${request.body.returnDate}`,
                 header3: `${request.body.departureId}`,
                 header4: `${request.body.departureName}`,
-                header5: `${request.body.returnIdText}`,
+                header5: `${request.body.returnId}`,
                 header6: `${request.body.returnName}`,
                 header7: `${request.body.coverDistance}`,
                 header8: `${request.body.duration}`,

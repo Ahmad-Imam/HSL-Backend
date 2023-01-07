@@ -17,5 +17,5 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
-app.listen(port, () => console.log(`App is running on port 8080`));
+app.listen(port, () => console.log(`App is running on port ${port}`));
 module.exports = app;
