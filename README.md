@@ -20,7 +20,8 @@ The project needs to be run locally. Make sure to run the project before opening
 3. GET /sendStationListJson shows all the station information included in the b.csv file. It is the dataset about station information given in the exercise github. (https://opendata.arcgis.com/datasets/726277c507ef4914b0aec3cbcfcbfafc_0.csv)
 
 4. POST /writeJourneyListJson creates new journey entry sent from frontend and writes them to the a.csv file. A sample valid journey information in request body looks like this: 
-            {
+           
+  {
                 "departureDate": "2014-05-31T23:57:25",
                 "returnDate": "2016-06-22T13:17:21+0000",
                 "departureId": "10",
@@ -52,7 +53,8 @@ The project needs to be run locally. Make sure to run the project before opening
 
 ## Backend Testing
 - run npm test
-Testing framework: Mocha,Chai
+- Testing framework: Mocha,Chai
+
 The tests are mainly written for creating new journey/staion endpoints. Returns response status 400 if invalid data found in request body of those endpoints. Returns 200 for success.
 
 ## Application Information
