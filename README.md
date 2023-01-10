@@ -15,9 +15,9 @@ The project needs to be run locally. Make sure to run the project before opening
 ## Backend Features
 1. 4 different endpoints
 
-2. GET /sendJourneyListJson shows all the journey included in the a.csv file. For clarification a.csv is the first csv file about journey information given in the exercise github (https://dev.hsl.fi/citybikes/od-trips-2021/2021-05.csv).
+2. GET /sendJourneyListJson shows all the journey included in the a.csv file. For clarification a.csv is the first csv file about journey information given in the exercise github (https://dev.hsl.fi/citybikes/od-trips-2021/2021-05.csv). Data is validated before sending as a response. Journeys that lasted for less than ten seconds and Journeys that covered distances shorter than 10 meters are not imported.
 
-3. GET /sendStationListJson shows all the station information included in the b.csv file. It is the dataset about station information given in the exercise github. (https://opendata.arcgis.com/datasets/726277c507ef4914b0aec3cbcfcbfafc_0.csv)
+3. GET /sendStationListJson shows all the station information included in the b.csv file. It is the dataset about station information given in the exercise github. (https://opendata.arcgis.com/datasets/726277c507ef4914b0aec3cbcfcbfafc_0.csv).  Data is validated before sending as a response.
 
 4. POST /writeJourneyListJson creates new journey entry sent from frontend and writes them to the a.csv file. A sample valid journey information in request body looks like this: 
            
